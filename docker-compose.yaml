@@ -1,0 +1,27 @@
+version: '3.3'
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'roommatepw'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - ./sql/up.sql:/docker-entrypoint-initdb.d/1.up.sql
+      - ./sql/populate.sql:/docker-entrypoint-initdb.d/2.populate.sql
+      - ./sql/data:/var/lib/mysql
+  api:
+    build: .
+    environment:
+      DB_USER: 'root'
+      DB_PASS: 'roommatepw'
+      DB_HOST: 'db'
+      DB_DATA: 'roommate'
+      PORT: '8000'
+    depends_on:
+      - db
+    ports:
+      - '8000:8000'
